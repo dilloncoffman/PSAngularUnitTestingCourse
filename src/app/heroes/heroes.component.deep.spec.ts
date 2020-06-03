@@ -51,7 +51,7 @@ describe('HeroesComponent (deep tests)', () => {
     fixture.detectChanges();
 
     const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent)); // gets a list of the <app-hero></app-hero> instances in the HeroesComponent
-    (<HeroComponent>heroComponents[0].componentInstance).delete.emit(undefined); // will raise the event right away from the child HeroComponent
+    heroComponents[0].triggerEventHandler('delete', null); // telling debugElement for child component to trigger its event rather than telling the component to raise or emit its delete event
 
     // check that deleteMethod is called with correct hero using jasmine spyOn above and .toHaveBeenCalledWith(param)
     expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
