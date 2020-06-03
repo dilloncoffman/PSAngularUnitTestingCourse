@@ -15,8 +15,9 @@ describe('HeroService', () => {
         { provide: MessageService, useValue: mockMessageService }
       ],
       imports: [HttpClientTestingModule]
-    })
+    });
+    httpTestingController = TestBed.get(HttpTestingController); // .get() looks inside dependency injection registry for this TestBed's module and finds the service that correlates to that type and gives us a handle to it
   });
 
-  httpTestingController = TestBed.get(HttpTestingController); // .get() looks inside dependency injection registry for this TestBed's module and finds the service that correlates to that type and gives us a handle to it
+
 });
