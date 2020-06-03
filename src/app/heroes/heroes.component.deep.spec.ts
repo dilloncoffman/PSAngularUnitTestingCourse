@@ -41,4 +41,20 @@ describe('HeroesComponent (deep tests)', () => {
       expect(heroComponentDebugElements[i].componentInstance.hero).toEqual(HEROES[i]);
     }
   });
+
+  it(`should call heroService.deleteHero when the Hero Component's delete
+  button is clicked` , () => {
+    spyOn(fixture.componentInstance, 'delete'); // spies on HeroesComponent delete method to check if it was called with the right hero below
+    mockHeroService.getHeroes.and.returnValue(of(HEROES));
+
+    // run ngOnInit to make what is returned above available on the HeroesComponent
+    fixture.detectChanges();
+
+    const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent)) // gets a list of the <app-hero></app-hero> instances in the HeroesComponent
+    heroComponents[0].query(By.css('button')) // get handle on button to trigger deleteHero event on first hero[0] that is then raised from the HeroComponent to the HeroesComponent
+      .triggerEventHandler('click', { stopPropagation: () => { } }); // stopPropagation used to just stop propagation on the button click to avoid actually submitting anything
+
+    // check that deleteMethod is called with correct hero using jasmine spyOn above and .toHaveBeenCalledWith(param)
+    expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
+  })
 })
