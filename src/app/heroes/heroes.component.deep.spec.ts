@@ -56,4 +56,23 @@ describe('HeroesComponent (deep tests)', () => {
     // check that deleteMethod is called with correct hero using jasmine spyOn above and .toHaveBeenCalledWith(param)
     expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
   })
+
+  it('should add a new hero to the hero list when the add button is clicked', () => {
+    mockHeroService.getHeroes.and.returnValue(of(HEROES));
+    // run ngOnInit to make what is returned above available on the HeroesComponent
+    fixture.detectChanges();
+    const name = 'Mr. Ice';
+
+    mockHeroService.addHero.and.returnValue(of({ id: 5, name: name, strength: 4 })) // pass back new hero like addHero in HeroesComponent add()
+    const inputElement = fixture.debugElement.query(By.css('input')).nativeElement; // get handle to input box
+    const addButton = fixture.debugElement.queryAll(By.css('button'))[0]; // get handle to Add button for adding a hero
+
+    inputElement.value = name; // simulates typing 'Mr. Ice' into input box by just setting its value
+    addButton.triggerEventHandler('click', null); // null as 2nd arg because event object doesn't matter in this case
+
+    fixture.detectChanges(); // trigger change detection to update buttons after Add button is 'clicked'
+
+    const heroText = fixture.debugElement.query(By.css('ul')).nativeElement.textContent; // check to see the hero name is in the resulting HTML
+    expect(heroText).toContain('Mr. Ice');
+  });
 })
