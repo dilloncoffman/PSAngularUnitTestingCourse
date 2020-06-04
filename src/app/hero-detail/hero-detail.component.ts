@@ -34,11 +34,19 @@ export class HeroDetailComponent implements OnInit {
   }
 
   save(): void {
-    debounce(() => { // makes the code async
+    let p = new Promise((resolve) => {
       this.heroService.updateHero(this.hero)
         .subscribe(() => this.goBack());
-    }, 250, false)();
+      resolve();
+    })
   }
+
+  // save(): void {
+  //   debounce(() => { // makes the code async
+  //     this.heroService.updateHero(this.hero)
+  //       .subscribe(() => this.goBack());
+  //   }, 250, false)();
+  // }
 }
 
 // Debounce function lets you make sure another function doesn't get called too often

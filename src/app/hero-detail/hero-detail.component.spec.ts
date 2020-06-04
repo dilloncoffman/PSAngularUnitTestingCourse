@@ -1,4 +1,4 @@
-import { TestBed, ComponentFixture, fakeAsync } from "@angular/core/testing"
+import { TestBed, ComponentFixture, fakeAsync, async } from "@angular/core/testing"
 import { HeroDetailComponent } from "./hero-detail.component"
 import { ActivatedRoute } from "@angular/router";
 import { HeroService } from "../hero.service";
@@ -38,6 +38,7 @@ describe('HeroDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('h2').textContent).toContain('SUPERMAN'); // since we pipe it to uppercase in the template itself
   });
 
+  // ***FAKEASYNC HELPER TO TEST ASYNC*** - can work with both a Promise and a setTimeout and other types of async code
   it('should call updateHero when save is called', fakeAsync(() => { // fakeAsync makes test synchronous
     mockHeroService.updateHero.and.returnValue(of({})); // can pass empty object because in save()'s function we ignore the return value
     fixture.detectChanges();
@@ -48,5 +49,18 @@ describe('HeroDetailComponent', () => {
     // could use flush() to call no matter how long async call is
 
     expect(mockHeroService.updateHero).toHaveBeenCalled();
+  }));
+
+  // ASYNC HELPER TO TEST ASYNC - really only capable of working with Promises
+  it('should call updateHero when save is called', async(() => { // async makes test synchronous
+    mockHeroService.updateHero.and.returnValue(of({})); // can pass empty object because in save()'s function we ignore the return value
+    fixture.detectChanges();
+
+    fixture.componentInstance.save(); // async call (waits 250ms)
+
+    fixture.whenStable().then(() => { // relying on Zone.js still
+      expect(mockHeroService.updateHero).toHaveBeenCalled();
+    }) // tell component to wait until it has been stabilized (all Promises have been resolved)
+
   }));
 });
