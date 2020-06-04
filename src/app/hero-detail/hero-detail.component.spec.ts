@@ -1,10 +1,11 @@
-import { TestBed, ComponentFixture } from "@angular/core/testing"
+import { TestBed, ComponentFixture, fakeAsync } from "@angular/core/testing"
 import { HeroDetailComponent } from "./hero-detail.component"
 import { ActivatedRoute } from "@angular/router";
 import { HeroService } from "../hero.service";
 import { Location } from '@angular/common'; // Location global var for browser
 import { of } from "rxjs/internal/observable/of";
 import { FormsModule } from "@angular/forms";
+import { tick, flush } from "@angular/core/testing";
 
 describe('HeroDetailComponent', () => {
   let fixture: ComponentFixture<HeroDetailComponent>; // allows for intellisense
@@ -37,15 +38,15 @@ describe('HeroDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('h2').textContent).toContain('SUPERMAN'); // since we pipe it to uppercase in the template itself
   });
 
-  it('should call updateHero when save is called', (done) => { // *** Passing 'done' tells Jasmine this is an ASYNC TEST so it will wait until we call the done() function before it finishes up the test
+  it('should call updateHero when save is called', fakeAsync(() => { // fakeAsync makes test synchronous
     mockHeroService.updateHero.and.returnValue(of({})); // can pass empty object because in save()'s function we ignore the return value
     fixture.detectChanges();
 
     fixture.componentInstance.save(); // async call (waits 250ms)
+    tick(250); // ticks using Zone.js the exact amount of time as the 250ms in on our HeroDetailComponent save method
+    // Zone.js lets us control the clock of our zone
+    // could use flush() to call no matter how long async call is
 
-    setTimeout(() => {
-      expect(mockHeroService.updateHero).toHaveBeenCalled();
-      done();
-    }, 300);
-  });
+    expect(mockHeroService.updateHero).toHaveBeenCalled();
+  }));
 });
