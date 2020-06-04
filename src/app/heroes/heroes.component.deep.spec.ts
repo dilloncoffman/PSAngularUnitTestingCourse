@@ -88,4 +88,19 @@ describe('HeroesComponent (deep tests)', () => {
     const heroText = fixture.debugElement.query(By.css('ul')).nativeElement.textContent; // check to see the hero name is in the resulting HTML
     expect(heroText).toContain('Mr. Ice');
   });
-})
+
+  it('should have the correct route for the first hero', () => {
+    mockHeroService.getHeroes.and.returnValue(of(HEROES));
+    fixture.detectChanges(); // run ngOnInit to make what is returned above in beforeEach from HeroService available on the HeroesComponent
+    // Get a hold of routerLink for very first hero, and check that the navigatedTo property from our mock RouterLinkDirectiveStub is set correctly
+    const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent)); // get a handle to heroComponents collection (HeroComponent directives)
+
+    let routerLink = heroComponents[0]
+      .query(By.directive(RouterLinkDirectiveStub))
+      .injector.get(RouterLinkDirectiveStub); // get a handle to stub class
+
+    heroComponents[0].query(By.css('a')).triggerEventHandler('click', null);
+
+    expect(routerLink.navigatedTo).toBe('/detail/1');
+  });
+});
