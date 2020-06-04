@@ -2,10 +2,23 @@ import { ComponentFixture, TestBed } from "@angular/core/testing"
 import { HeroesComponent } from "./heroes.component"
 import { HeroService } from "../hero.service";
 import { of } from "rxjs/internal/observable/of";
-import { NO_ERRORS_SCHEMA, Component, Input, Output, EventEmitter } from "@angular/core";
+import { NO_ERRORS_SCHEMA, Directive, Input } from "@angular/core";
 import { Hero } from "../hero";
 import { By } from "@angular/platform-browser";
 import { HeroComponent } from "../hero/hero.component";
+
+@Directive({
+  selector: '[routerLink]',
+  host: { '(click)': 'onClick()' } // listener for host event (in this case click), listen for click event on parent DOM node and when that is fired, call onClick() method below
+})
+export class RouterLinkDirectiveStub {
+  @Input('routerLink') linkParams: any;
+  navigatedTo: any = null;
+
+  onClick() {
+    this.navigatedTo = this.linkParams;
+  }
+}
 
 describe('HeroesComponent (deep tests)', () => {
   let fixture: ComponentFixture<HeroesComponent>;
@@ -18,11 +31,11 @@ describe('HeroesComponent (deep tests)', () => {
     mockHeroService = jasmine.createSpyObj(['getHeroes', 'addHero', 'deleteHero']); // creates a mock service with array of methods
 
     TestBed.configureTestingModule({
-      declarations: [HeroesComponent, HeroComponent],
+      declarations: [HeroesComponent, HeroComponent, RouterLinkDirectiveStub],
       providers: [
         { provide: HeroService, useValue: mockHeroService } // when anyone asks for a HeroService, use the mockHeroService
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      // schemas: [NO_ERRORS_SCHEMA]
     })
     fixture = TestBed.createComponent(HeroesComponent);
     mockHeroService.getHeroes.and.returnValue(of(HEROES)); // mock returning an Observable to avoid errors when this.getHeroes is called in teh ngOnInit lifecycle method of the HeroesComponent when it is initialized after fixture.detectChanges() is called below
