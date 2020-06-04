@@ -95,7 +95,7 @@ describe('HeroesComponent (deep tests)', () => {
     // Get a hold of routerLink for very first hero, and check that the navigatedTo property from our mock RouterLinkDirectiveStub is set correctly
     const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent)); // get a handle to heroComponents collection (HeroComponent directives)
 
-    let routerLink = heroComponents[0]
+    let routerLink = heroComponents[0] // get the first HeroComponent in the list of them
       .query(By.directive(RouterLinkDirectiveStub))
       .injector.get(RouterLinkDirectiveStub); // get a handle to stub class
 

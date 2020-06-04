@@ -34,7 +34,25 @@ export class HeroDetailComponent implements OnInit {
   }
 
   save(): void {
-    this.heroService.updateHero(this.hero)
-      .subscribe(() => this.goBack());
+    debounce(() => { // makes the code async
+      this.heroService.updateHero(this.hero)
+        .subscribe(() => this.goBack());
+    }, 250, false)();
+  }
+}
+
+// Debounce function lets you make sure another function doesn't get called too often
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function () {
+    let context = this, args = arguments;
+    let later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait); // makes async
+    if (callNow) func.apply(context, args);
   }
 }

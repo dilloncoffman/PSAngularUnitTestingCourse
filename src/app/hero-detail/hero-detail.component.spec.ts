@@ -36,4 +36,16 @@ describe('HeroDetailComponent', () => {
 
     expect(fixture.nativeElement.querySelector('h2').textContent).toContain('SUPERMAN'); // since we pipe it to uppercase in the template itself
   });
+
+  it('should call updateHero when save is called', (done) => { // *** Passing 'done' tells Jasmine this is an ASYNC TEST so it will wait until we call the done() function before it finishes up the test
+    mockHeroService.updateHero.and.returnValue(of({})); // can pass empty object because in save()'s function we ignore the return value
+    fixture.detectChanges();
+
+    fixture.componentInstance.save(); // async call (waits 250ms)
+
+    setTimeout(() => {
+      expect(mockHeroService.updateHero).toHaveBeenCalled();
+      done();
+    }, 300);
+  });
 });
